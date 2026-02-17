@@ -1,0 +1,10 @@
+django>=4.2
+djangorestframework
+django-unfold
+django-ckeditor
+django-cors-headers
+django-redis
+pillow
+python-dotenv
+whitenoise
+gunicorn
