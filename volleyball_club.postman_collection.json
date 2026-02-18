@@ -1,0 +1,55 @@
+{
+	"info": {
+		"_postman_id": "c1a2b3c4-d5e6-4f7g-8h9i-j0k1l2m3n4o5",
+		"name": "Nepal Volleyball Club Hamburg API",
+		"description": "Full Postman Collection for the trilingual CMS backend of Nepal Volleyball Club Hamburg e.V.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01: Content Pages",
+			"description": "Endpoints for full page structures (Hero, Settings, SEO).",
+			"item": [
+				{ "name": "Homepage", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/home/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "home", ""] } } },
+				{ "name": "About Page", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/about/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "about", ""] } } },
+				{ "name": "Committee Page", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/committee/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "committee", ""] } } },
+				{ "name": "Team Page", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/team/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "team", ""] } } },
+				{ "name": "Membership Page", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/membership/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "membership", ""] } } },
+				{ "name": "Events Page (Settings)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/events/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "events", ""] } } },
+				{ "name": "News Page (Settings)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/news/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "news", ""] } } },
+				{ "name": "Gallery Page", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/gallery/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "gallery", ""] } } },
+				{ "name": "Contact Page", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/contact/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "contact", ""] } } },
+				{ "name": "Notice Page", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/content/notice/", "host": ["{{base_url}}"], "path": ["api", "v1", "content", "notice", ""] } } }
+			]
+		},
+		{
+			"name": "02: Resource Data",
+			"description": "Collections of individual items like articles and events.",
+			"item": [
+				{ "name": "Articles (News)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/data/articles/", "host": ["{{base_url}}"], "path": ["api", "v1", "data", "articles", ""] } } },
+				{ "name": "Events", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/data/events/", "host": ["{{base_url}}"], "path": ["api", "v1", "data", "events", ""] } } },
+				{ "name": "Members (Coaches/Players)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/data/members/", "host": ["{{base_url}}"], "path": ["api", "v1", "data", "members", ""] } } },
+				{ "name": "Notices", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/data/notices/", "host": ["{{base_url}}"], "path": ["api", "v1", "data", "notices", ""] } } },
+				{ "name": "Gallery Images", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/data/gallery/", "host": ["{{base_url}}"], "path": ["api", "v1", "data", "gallery", ""] } } }
+			]
+		},
+		{
+			"name": "03: System & Styles",
+			"description": "Navigation, footers, and global branding tokens.",
+			"item": [
+				{ "name": "Navigation Items", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/navigation/items/", "host": ["{{base_url}}"], "path": ["api", "v1", "navigation", "items", ""] } } },
+				{ "name": "Navbar Settings", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/navigation/settings/", "host": ["{{base_url}}"], "path": ["api", "v1", "navigation", "settings", ""] } } },
+				{ "name": "Footer Settings", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/navigation/footer/", "host": ["{{base_url}}"], "path": ["api", "v1", "navigation", "footer", ""] } } },
+				{ "name": "Global Styles", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/core/global-styles/", "host": ["{{base_url}}"], "path": ["api", "v1", "core", "global-styles", ""] } } },
+				{ "name": "Media Library", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/media/", "host": ["{{base_url}}"], "path": ["api", "v1", "media", ""] } } }
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}

@@ -16,4 +16,10 @@ urlpatterns = [
 
     # Core/Global Styles (e.g., /api/v1/core/)
     path('core/', include('apps.core.urls')),
+    
+    # Membership Applications (e.g., /api/v1/membership/)
+    path('membership/', include('apps.membership_options.urls')),
+    
+    # Contact Submissions (e.g., /api/v1/contact/)
+    path('contact/', include('apps.contact_options.urls')),
 ]

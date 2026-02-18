@@ -1,7 +1,9 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin, StackedInline, TabularInline
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
+from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline, StackedInline, TabularInline
 from .models import (
-    ContactPage, ContactHero, ContactInfo, ContactSocial, ContactSettings,
+    ContactPage, ContactHero, ContactInfo, ContactSocial, ContactSettings, ContactSubmission,
     ContactPageProxy, ContactHeroProxy, ContactInfoProxy, ContactSocialProxy, ContactLabelsProxy
 )
 
@@ -125,3 +127,24 @@ class ContactLabelsAdmin(ModelAdmin):
     exclude = COMPONENT_EXCLUDE
     inlines = [ContactSettingsInline]
     def has_add_permission(self, request): return False
+
+@admin.register(ContactSubmission)
+class ContactSubmissionAdmin(ModelAdmin):
+    list_display = ('name', 'email', 'subject', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('name', 'email', 'subject')
+    readonly_fields = ('created_at', 'updated_at')
+    date_hierarchy = 'created_at'
+    
+    fieldsets = (
+        ('Contact Details', {
+            'fields': ('name', 'email', 'subject')
+        }),
+        ('Message', {
+            'fields': ('message',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )

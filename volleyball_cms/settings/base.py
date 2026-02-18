@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.team_options.apps.TeamOptionsConfig',
     'apps.membership_options.apps.MembershipOptionsConfig',
     'apps.events_options.apps.EventsOptionsConfig',
+    'apps.notice_options.apps.NoticeOptionsConfig',
     'apps.news_options.apps.NewsOptionsConfig',
     'apps.gallery_options.apps.GalleryOptionsConfig',
     'apps.contact_options.apps.ContactOptionsConfig',

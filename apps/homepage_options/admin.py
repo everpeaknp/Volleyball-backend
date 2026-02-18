@@ -7,7 +7,7 @@ from .models import (
 )
 
 @admin.register(HomePageProxy)
-class HomePageProxyAdmin(ModelAdmin):
+class HomePageProxyAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'status', 'updated_at')
     fieldsets = (
         ('SEO Settings', {

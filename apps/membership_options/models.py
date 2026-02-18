@@ -112,6 +112,50 @@ class MembershipFormSettings(models.Model):
     class Meta:
         verbose_name = "Form Settings & Labels"
 
+# Membership Application Model (for storing form submissions)
+class MembershipApplication(models.Model):
+    GENDER_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other'),
+    ]
+    
+    EXPERIENCE_CHOICES = [
+        ('beginner', 'Beginner'),
+        ('intermediate', 'Intermediate'),
+        ('advanced', 'Advanced'),
+    ]
+    
+    POSITION_CHOICES = [
+        ('setter', 'Setter'),
+        ('outside_hitter', 'Outside Hitter'),
+        ('middle_blocker', 'Middle Blocker'),
+        ('libero', 'Libero'),
+        ('right_hitter', 'Right Hitter'),
+    ]
+    
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    address = models.TextField()
+    date_of_birth = models.DateField()
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    experience = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES)
+    position = models.CharField(max_length=30, choices=POSITION_CHOICES)
+    reason = models.TextField()
+    
+    # Auto fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Membership Application"
+        verbose_name_plural = "Membership Applications"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.full_name} - {self.email}"
+
 # --- Proxy Models for Admin ---
 
 class MembershipPageProxy(MembershipPage):

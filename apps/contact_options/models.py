@@ -89,6 +89,25 @@ class ContactSettings(models.Model):
     class Meta:
         verbose_name = "Contact Labels & Settings"
 
+class ContactSubmission(models.Model):
+    """Model to store contact form submissions"""
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    
+    # Auto fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Contact Submission"
+        verbose_name_plural = "Contact Submissions"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.name} - {self.subject} ({self.created_at.strftime('%Y-%m-%d %H:%M')})"
+
 # Proxy Models for Step-by-Step Admin
 class ContactPageProxy(ContactPage):
     class Meta:

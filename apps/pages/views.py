@@ -1,9 +1,7 @@
 from rest_framework import viewsets
 from apps.homepage_options.models import HomePage
 from apps.about_options.models import AboutPage
-from .models import (
-    NoticePage
-)
+from apps.notice_options.models import NoticePage
 from apps.events_options.models import EventsPage
 from apps.news_options.models import NewsPage
 from apps.committee_options.models import CommitteePage
@@ -14,9 +12,9 @@ from apps.contact_options.models import ContactPage
 from .serializers import (
     HomePageSerializer, AboutPageSerializer, CommitteePageSerializer,
     TeamPageSerializer, MembershipPageSerializer,
-    GalleryPageSerializer, ContactPageSerializer,
-    NoticePageSerializer
+    GalleryPageSerializer, ContactPageSerializer
 )
+from apps.notice_options.serializers import NoticePageSerializer
 from apps.api.news_events_serializers import EventsPageSerializer, NewsPageSerializer
 
 class HomePageViewSet(viewsets.ModelViewSet):

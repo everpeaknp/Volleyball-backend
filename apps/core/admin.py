@@ -1,9 +1,9 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from .models import GlobalStyles
 
 @admin.register(GlobalStyles)
-class GlobalStylesAdmin(ModelAdmin):
+class GlobalStylesAdmin(admin.ModelAdmin):
     list_display = ('brand_name_en', 'primary_500', 'secondary_500', 'accent_500')
     fieldsets = (
         ('Identity', {

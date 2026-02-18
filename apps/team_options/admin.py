@@ -1,5 +1,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
+from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline, TabularInline, StackedInline
 from .models import (
     TeamPageProxy, TeamHeroProxy, TeamCoachesProxy, TeamPlayersProxy, TeamPhotoCTAProxy,
     TeamHero, Coach, Player, TeamPhotoSection, TeamCTA, TeamCoachesSettings, TeamPlayersSettings

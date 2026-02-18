@@ -1,5 +1,7 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin, StackedInline, TabularInline
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
+from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline, StackedInline, TabularInline
 from .models import (
     EventsPage, EventsHero, EventsSettings, Event,
     EventsPageProxy, EventsHeroProxy, EventsManagementProxy, EventsLabelsProxy

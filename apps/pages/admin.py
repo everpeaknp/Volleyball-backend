@@ -1,7 +1,4 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin
-from .models import NoticePage
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 
-@admin.register(NoticePage)
-class NoticePageAdmin(ModelAdmin):
-    list_display = ('__str__', 'status', 'updated_at')
+# NoticePage has been moved to apps.notice_options

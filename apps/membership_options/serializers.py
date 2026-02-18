@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MembershipPage, MembershipHero, MembershipBenefit, MembershipFormSettings
+from .models import MembershipPage, MembershipHero, MembershipBenefit, MembershipFormSettings, MembershipApplication
 from apps.media.serializers import MediaSerializer
 
 class MembershipHeroSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class MembershipPageFullSerializer(serializers.ModelSerializer):
     hero = MembershipHeroSerializer(read_only=True)
     benefits = MembershipBenefitSerializer(many=True, read_only=True)
     form_settings = MembershipFormSettingsSerializer(read_only=True)
-    og_image = MediaSerializer(read_only=True)
+    og_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = MembershipPage
@@ -32,6 +32,20 @@ class MembershipPageFullSerializer(serializers.ModelSerializer):
             'meta_keywords',
             'og_title_ne', 'og_title_en', 'og_title_de',
             'og_description_ne', 'og_description_en', 'og_description_de',
-            'og_image', 'canonical_url',
+            'og_image_url', 'canonical_url',
             'hero', 'benefits', 'form_settings'
         ]
+
+    def get_og_image_url(self, obj):
+        if obj.og_image and obj.og_image.file:
+            try:
+                return obj.og_image.file.url
+            except ValueError:
+                return None
+        return None
+
+class MembershipApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MembershipApplication
+        fields = '__all__'
+        read_only_fields = ('id', 'created_at', 'updated_at')

@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from .models import (
-    NoticePage
-)
+# NoticePage has been moved to apps.notice_options
 from apps.committee_options.serializers import CommitteePageFullSerializer
 from apps.team_options.serializers import TeamPageFullSerializer
 from apps.membership_options.serializers import MembershipPageFullSerializer
@@ -18,19 +16,16 @@ from apps.media.serializers import MediaSerializer
 # --- Home Page Serializers ---
 
 class HomeHeroSerializer(serializers.ModelSerializer):
-    hero_video = MediaSerializer(source='video_file', read_only=True)
     class Meta:
         model = HomeHero
         exclude = ('id', 'page')
 
 class HomeIntroSerializer(serializers.ModelSerializer):
-    intro_image = MediaSerializer(source='image', read_only=True)
     class Meta:
         model = HomeIntro
         exclude = ('id', 'page')
 
 class HomeObjectiveSerializer(serializers.ModelSerializer):
-    image = MediaSerializer(read_only=True)
     class Meta:
         model = HomeObjective
         exclude = ('id', 'mission')
@@ -57,7 +52,7 @@ class HomePageSerializer(serializers.ModelSerializer):
     mission = HomeMissionSerializer(read_only=True)
     motto = HomeMottoSerializer(read_only=True)
     stats = HomeStatSerializer(many=True, read_only=True)
-    og_image = MediaSerializer(read_only=True)
+    og_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = HomePage
@@ -68,9 +63,17 @@ class HomePageSerializer(serializers.ModelSerializer):
             'meta_keywords',
             'og_title_ne', 'og_title_en', 'og_title_de',
             'og_description_ne', 'og_description_en', 'og_description_de',
-            'og_image', 'canonical_url',
+            'og_image_url', 'canonical_url',
             'hero', 'intro', 'mission', 'motto', 'stats'
         ]
+
+    def get_og_image_url(self, obj):
+        if obj.og_image and obj.og_image.file:
+            try:
+                return obj.og_image.file.url
+            except ValueError:
+                return None
+        return None
 
 # --- About Page Serializers ---
 
@@ -86,8 +89,6 @@ class AboutStatSerializer(serializers.ModelSerializer):
 
 class AboutIntroSerializer(serializers.ModelSerializer):
     stats = AboutStatSerializer(many=True, read_only=True)
-    main_image = MediaSerializer(read_only=True)
-    secondary_image = MediaSerializer(read_only=True)
     class Meta:
         model = AboutIntro
         exclude = ('id', 'page')
@@ -104,7 +105,6 @@ class AboutObjectiveSerializer(serializers.ModelSerializer):
 
 class AboutStrategicSerializer(serializers.ModelSerializer):
     objectives = AboutObjectiveSerializer(many=True, read_only=True)
-    side_image = MediaSerializer(read_only=True)
     class Meta:
         model = AboutStrategic
         exclude = ('id', 'page')
@@ -114,7 +114,7 @@ class AboutPageSerializer(serializers.ModelSerializer):
     intro = AboutIntroSerializer(read_only=True)
     core = AboutCoreSerializer(read_only=True)
     strategic = AboutStrategicSerializer(read_only=True)
-    og_image = MediaSerializer(read_only=True)
+    og_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = AboutPage
@@ -125,9 +125,17 @@ class AboutPageSerializer(serializers.ModelSerializer):
             'meta_keywords',
             'og_title_ne', 'og_title_en', 'og_title_de',
             'og_description_ne', 'og_description_en', 'og_description_de',
-            'og_image', 'canonical_url',
+            'og_image_url', 'canonical_url',
             'hero', 'intro', 'core', 'strategic'
         ]
+
+    def get_og_image_url(self, obj):
+        if obj.og_image and obj.og_image.file:
+            try:
+                return obj.og_image.file.url
+            except ValueError:
+                return None
+        return None
 
 # --- Generic Page Serializers ---
 
@@ -148,7 +156,4 @@ NewsPageSerializer = NewNewsPageSerializer
 GalleryPageSerializer = NewGalleryPageSerializer
 ContactPageSerializer = NewContactPageSerializer
 
-class NoticePageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = NoticePage
-        fields = '__all__'
+# NoticePage is now handled by apps.notice_options

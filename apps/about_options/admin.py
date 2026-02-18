@@ -1,6 +1,8 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from django.utils.html import mark_safe
-from unfold.admin import ModelAdmin, TabularInline
+from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline, TabularInline
 from .models import (
     AboutPageProxy, AboutHeroProxy, AboutIntroProxy,
     AboutCoreProxy, AboutStrategicProxy, AboutStat, AboutObjective

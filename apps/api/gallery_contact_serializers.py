@@ -20,9 +20,18 @@ class GalleryCategorySerializer(serializers.ModelSerializer):
 
 class GalleryImageSerializer(serializers.ModelSerializer):
     category_id = serializers.PrimaryKeyRelatedField(source='category', read_only=True)
+    image_url_full = serializers.SerializerMethodField()
     class Meta:
         model = GalleryImage
-        fields = ['id', 'image', 'image_url', 'category_id', 'title_ne', 'title_en', 'title_de', 'order']
+        fields = ['id', 'image', 'image_url', 'image_url_full', 'category_id', 'title_ne', 'title_en', 'title_de', 'order']
+
+    def get_image_url_full(self, obj):
+        if obj.image:
+            try:
+                return obj.image.url
+            except ValueError:
+                return obj.image_url
+        return obj.image_url
 
 class GallerySettingsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,19 +40,35 @@ class GallerySettingsSerializer(serializers.ModelSerializer):
 
 class GalleryPageSerializer(serializers.ModelSerializer):
     hero = GalleryHeroSerializer(read_only=True)
-    categories = GalleryCategorySerializer(many=True, read_only=True, source='page_categories') # need to check related name or just query
+    categories = serializers.SerializerMethodField()
     images = GalleryImageSerializer(many=True, read_only=True)
     settings = GallerySettingsSerializer(read_only=True)
+    og_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = GalleryPage
-        fields = ['status', 'meta_title_ne', 'meta_title_en', 'meta_title_de', 'hero', 'images', 'settings']
+        fields = [
+            'status', 'published_at', 'updated_at',
+            'meta_title_ne', 'meta_title_en', 'meta_title_de',
+            'meta_description_ne', 'meta_description_en', 'meta_description_de',
+            'meta_keywords',
+            'og_title_ne', 'og_title_en', 'og_title_de',
+            'og_description_ne', 'og_description_en', 'og_description_de',
+            'og_image_url', 'canonical_url',
+            'hero', 'categories', 'images', 'settings'
+        ]
 
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        # Categories aren't directly linked to GalleryPage in my model, so I'll fetch them all
-        ret['categories'] = GalleryCategorySerializer(GalleryCategory.objects.all(), many=True).data
-        return ret
+    def get_categories(self, obj):
+        # Fetch all categories as they aren't directly linked to GalleryPage
+        return GalleryCategorySerializer(GalleryCategory.objects.all(), many=True).data
+
+    def get_og_image_url(self, obj):
+        if obj.og_image and obj.og_image.file:
+            try:
+                return obj.og_image.file.url
+            except ValueError:
+                return None
+        return None
 
 # --- Contact Serializers ---
 
@@ -81,7 +106,25 @@ class ContactPageSerializer(serializers.ModelSerializer):
     contact_methods = ContactInfoSerializer(many=True, read_only=True)
     social_links = ContactSocialSerializer(many=True, read_only=True)
     settings = ContactSettingsSerializer(read_only=True)
+    og_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = ContactPage
-        fields = ['status', 'meta_title_ne', 'meta_title_en', 'meta_title_de', 'hero', 'contact_methods', 'social_links', 'settings']
+        fields = [
+            'status', 'published_at', 'updated_at',
+            'meta_title_ne', 'meta_title_en', 'meta_title_de',
+            'meta_description_ne', 'meta_description_en', 'meta_description_de',
+            'meta_keywords',
+            'og_title_ne', 'og_title_en', 'og_title_de',
+            'og_description_ne', 'og_description_en', 'og_description_de',
+            'og_image_url', 'canonical_url',
+            'hero', 'contact_methods', 'social_links', 'settings'
+        ]
+
+    def get_og_image_url(self, obj):
+        if obj.og_image and obj.og_image.file:
+            try:
+                return obj.og_image.file.url
+            except ValueError:
+                return None
+        return None

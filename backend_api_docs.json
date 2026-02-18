@@ -1,0 +1,61 @@
+{
+  "project": "Nepal Volleyball Club Hamburg e.V. CMS",
+  "base_url": "/api/v1/",
+  "endpoints": {
+    "content_pages": {
+      "path": "content/",
+      "description": "Full page data including hero sections, settings, and SEO meta fields.",
+      "routes": [
+        { "url": "/api/v1/content/home/", "description": "Homepage content including hero, mission, vision, and stats." },
+        { "url": "/api/v1/content/about/", "description": "About page details, strategic objectives, and core values." },
+        { "url": "/api/v1/content/committee/", "description": "Committee page with board members and section settings." },
+        { "url": "/api/v1/content/team/", "description": "Team page with coaching staff, players, and CTA section." },
+        { "url": "/api/v1/content/membership/", "description": "Membership page with benefits and localized form labels." },
+        { "url": "/api/v1/content/events/", "description": "Events listing page with hero and general settings." },
+        { "url": "/api/v1/content/news/", "description": "News list page with hero and category settings." },
+        { "url": "/api/v1/content/gallery/", "description": "Gallery page with hero, categories, and nested images." },
+        { "url": "/api/v1/content/contact/", "description": "Contact page with hero, info list, and social links." },
+        { "url": "/api/v1/content/notice/", "description": "Notice board page content." }
+      ]
+    },
+    "resource_data": {
+      "path": "data/",
+      "description": "Individual resource items and collections (articles, events, team members).",
+      "routes": [
+        { "url": "/api/v1/data/members/", "description": "List of all club members (coaches/players)." },
+        { "url": "/api/v1/data/articles/", "description": "Listing of all news articles with trilingual content." },
+        { "url": "/api/v1/data/notices/", "description": "List of all public notices." },
+        { "url": "/api/v1/data/events/", "description": "Upcoming and past events with date/location details." },
+        { "url": "/api/v1/data/gallery/", "description": "Collection of gallery images with categories." }
+      ]
+    },
+    "site_structure": {
+      "path": "navigation/",
+      "description": "Navigation items, header/footer settings, and site-wide branding.",
+      "routes": [
+        { "url": "/api/v1/navigation/items/", "description": "Ordered list of main navigation links." },
+        { "url": "/api/v1/navigation/settings/", "description": "Header branding details (logos, names)." },
+        { "url": "/api/v1/navigation/footer/", "description": "Footer columns, links, and contact snippets." }
+      ]
+    },
+    "core": {
+      "path": "core/",
+      "description": "Global design tokens and system settings.",
+      "routes": [
+        { "url": "/api/v1/core/global-styles/", "description": "Global color palette and brand identity tokens." }
+      ]
+    },
+    "media": {
+      "path": "media/",
+      "description": "Media library and file access.",
+      "routes": [
+        { "url": "/api/v1/media/", "description": "Listing and management of uploaded media files." }
+      ]
+    }
+  },
+  "features": {
+    "trilingual": true,
+    "languages": ["NE", "EN", "DE"],
+    "cms_integrated": true
+  }
+}

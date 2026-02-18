@@ -1,8 +1,10 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
+from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline, TabularInline, StackedInline
 from .models import (
     MembershipPageProxy, MembershipHeroProxy, MembershipBenefitsProxy, MembershipFormProxy,
-    MembershipHero, MembershipBenefit, MembershipFormSettings
+    MembershipHero, MembershipBenefit, MembershipFormSettings, MembershipApplication
 )
 
 # --- Inlines ---
@@ -124,3 +126,24 @@ class MembershipFormProxyAdmin(ModelAdmin):
     inlines = [MembershipFormSettingsInline]
     exclude = COMPONENT_EXCLUDE
     list_display = ('__str__', 'updated_at')
+
+@admin.register(MembershipApplication)
+class MembershipApplicationAdmin(ModelAdmin):
+    list_display = ('full_name', 'email', 'phone', 'experience', 'position', 'created_at')
+    list_filter = ('gender', 'experience', 'position', 'created_at')
+    search_fields = ('full_name', 'email', 'phone')
+    readonly_fields = ('created_at', 'updated_at')
+    date_hierarchy = 'created_at'
+    
+    fieldsets = (
+        ('Personal Information', {
+            'fields': ('full_name', 'email', 'phone', 'address', 'date_of_birth')
+        }),
+        ('Volleyball Information', {
+            'fields': ('gender', 'experience', 'position', 'reason')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
