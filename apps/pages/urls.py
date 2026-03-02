@@ -1,3 +1,4 @@
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     HomePageViewSet, AboutPageViewSet, CommitteePageViewSet,
@@ -18,4 +19,6 @@ router.register(r'gallery', GalleryPageViewSet)
 router.register(r'contact', ContactPageViewSet)
 router.register(r'notice', NoticePageViewSet)
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('sponsorship/', include('apps.sponsorship_options.urls')),
+] + router.urls

@@ -1,0 +1,5 @@
+125 objects imported automatically (use -v 2 for details).
+
+Group: Committee Members, Members: 9
+Group: General Members, Members: 61
+Group: Advisors, Members: 7

@@ -1,19 +1,20 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+# Load environment variables from .env file
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-replace-me-in-production'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-replace-me-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 # Application definition
 
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     'apps.team_options.apps.TeamOptionsConfig',
     'apps.membership_options.apps.MembershipOptionsConfig',
     'apps.events_options.apps.EventsOptionsConfig',
+    'apps.sponsorship_options.apps.SponsorshipOptionsConfig',
     'apps.notice_options.apps.NoticeOptionsConfig',
     'apps.news_options.apps.NewsOptionsConfig',
     'apps.gallery_options.apps.GalleryOptionsConfig',
@@ -179,5 +181,21 @@ UNFOLD = {
         "show_all_applications": True,
     },
 }
+
+# Email Settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('SMTP_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('SMTP_PORT', 587))
+EMAIL_USE_TLS = os.getenv('SMTP_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('SMTP_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+
+# Construct DEFAULT_FROM_EMAIL with Name if provided
+from_name = os.getenv('MAIL_FROM_NAME', '')
+from_email = os.getenv('MAIL_FROM', EMAIL_HOST_USER)
+if from_name:
+    DEFAULT_FROM_EMAIL = f'{from_name} <{from_email}>'
+else:
+    DEFAULT_FROM_EMAIL = from_email
 
 

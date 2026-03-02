@@ -1,0 +1,2 @@
+Testing SMTP with Host: smtp.gmail.com, User: yummyever.np@gmail.com
+SUCCESS: Test email sent successfully!

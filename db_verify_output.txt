@@ -1,0 +1,4 @@
+125 objects imported automatically (use -v 2 for details).
+
+Player Category: player, Experience: intermediate, Position: setter
+Committee Category: committee, Voucher: /media/images/membership/vouchers/voucher.png

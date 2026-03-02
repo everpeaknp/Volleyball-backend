@@ -1,0 +1,3 @@
+Current is_approved for Test Player: False
+Setting is_approved to True...
+Done. Check logs/email output if possible.

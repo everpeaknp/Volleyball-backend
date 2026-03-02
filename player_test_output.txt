@@ -1,0 +1,4 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   448  100   112  100   336    814   2443 --:--:-- --:--:-- --:--:--  2434100   448  100   112  100   336    813   2440 --:--:-- --:--:-- --:--:--  2434
+{"success":true,"message":"Application submitted successfully! We will contact you shortly.","application_id":4}

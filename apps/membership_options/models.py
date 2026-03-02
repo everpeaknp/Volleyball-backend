@@ -96,6 +96,15 @@ class MembershipFormSettings(models.Model):
     label_submit_en = models.CharField(max_length=100, default="Submit Application")
     label_submit_de = models.CharField(max_length=100, default="Antrag absenden")
 
+    # New labels for category and voucher
+    label_category_ne = models.CharField(max_length=100, default="सदस्यता प्रकार")
+    label_category_en = models.CharField(max_length=100, default="Membership Category")
+    label_category_de = models.CharField(max_length=100, default="Mitgliedschaftskategorie")
+
+    label_voucher_ne = models.CharField(max_length=100, default="बैंक भौचर फोटो")
+    label_voucher_en = models.CharField(max_length=100, default="Bank Voucher Photo")
+    label_voucher_de = models.CharField(max_length=100, default="Bankbeleg Foto")
+
     # Options (Stored as comma-separated strings for simplicity in Admin, or JSON if needed)
     options_gender_ne = models.CharField(max_length=500, default="पुरुष, महिला, अन्य")
     options_gender_en = models.CharField(max_length=500, default="Male, Female, Other")
@@ -108,6 +117,10 @@ class MembershipFormSettings(models.Model):
     options_position_ne = models.CharField(max_length=500, default="सेटर, आउटसाइड हिटर, मिडल ब्लकर, लिबरो, राइट हिटर")
     options_position_en = models.CharField(max_length=500, default="Setter, Outside Hitter, Middle Blocker, Libero, Right Hitter")
     options_position_de = models.CharField(max_length=500, default="Zuspieler, Außenangreifer, Mittelblocker, Libero, Diagonalangreifer")
+
+    options_category_ne = models.CharField(max_length=500, default="सदस्य, खेलाडी")
+    options_category_en = models.CharField(max_length=500, default="Committee, Player")
+    options_category_de = models.CharField(max_length=500, default="Ausschuss, Spieler")
 
     class Meta:
         verbose_name = "Form Settings & Labels"
@@ -133,6 +146,11 @@ class MembershipApplication(models.Model):
         ('libero', 'Libero'),
         ('right_hitter', 'Right Hitter'),
     ]
+
+    CATEGORY_CHOICES = [
+        ('committee', 'Committee'),
+        ('player', 'Player'),
+    ]
     
     full_name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -140,9 +158,19 @@ class MembershipApplication(models.Model):
     address = models.TextField()
     date_of_birth = models.DateField()
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    experience = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES)
-    position = models.CharField(max_length=30, choices=POSITION_CHOICES)
+    
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='player')
+    
+    # Player specific fields (optional if category is committee)
+    experience = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES, blank=True, null=True)
+    position = models.CharField(max_length=30, choices=POSITION_CHOICES, blank=True, null=True)
+    
+    # Committee specific fields (required if category is committee)
+    bank_voucher = models.ImageField(upload_to='images/membership/vouchers/', null=True, blank=True)
+    
     reason = models.TextField()
+    
+    is_approved = models.BooleanField(default=False)
     
     # Auto fields
     created_at = models.DateTimeField(auto_now_add=True)
@@ -155,6 +183,34 @@ class MembershipApplication(models.Model):
     
     def __str__(self):
         return f"{self.full_name} - {self.email}"
+
+    def send_approval_email(self):
+        from django.core.mail import send_mail
+        from django.conf import settings
+        try:
+            send_mail(
+                subject='Your Membership has been Approved! - Nepal Volleyball Club Hamburg',
+                message=f'Dear {self.full_name},\n\n'
+                        f'We are excited to inform you that your membership application for Nepal Volleyball Club Hamburg e.V. has been approved!\n\n'
+                        f'Welcome to our community! We will be in touch soon with further details regarding membership benefits, upcoming events, and training schedules.\n\n'
+                        f'Best regards,\n'
+                        f'Nepal Volleyball Club Hamburg e.V. Team',
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@nepalvolleyballhh.de'),
+                recipient_list=[self.email],
+                fail_silently=True,
+            )
+        except Exception as e:
+            print(f"Failed to send approval email to {self.email}: {e}")
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            try:
+                old_instance = MembershipApplication.objects.get(pk=self.pk)
+                if not old_instance.is_approved and self.is_approved:
+                    self.send_approval_email()
+            except MembershipApplication.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
 
 # --- Proxy Models for Admin ---
 

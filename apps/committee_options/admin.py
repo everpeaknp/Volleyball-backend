@@ -1,11 +1,9 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
-from django.contrib import admin
-from unfold.admin import ModelAdmin, TabularInline, StackedInline, TabularInline, StackedInline
 from .models import (
     CommitteePageProxy, CommitteeHeroProxy, CommitteeExecutiveProxy,
-    CommitteeGeneralProxy, CommitteeTitleProxy, 
-    CommitteeHero, CommitteeBoard, CommitteeMember, CommitteeSectionSettings
+    CommitteeGroupProxy, CommitteeTitleProxy, 
+    CommitteeHero, CommitteeBoard, CommitteeMember, CommitteeGroup, CommitteeSectionSettings
 )
 
 # --- Inlines ---
@@ -53,13 +51,28 @@ class CommitteeBoardInline(StackedInline):
         }),
     )
 
-class CommitteeGeneralInline(TabularInline):
+class CommitteeMemberInline(TabularInline):
     model = CommitteeMember
     extra = 1
     tab = True
-    verbose_name = "General Member"
-    verbose_name_plural = "General Committee Members"
-    fields = ('name', 'image', 'order')
+    verbose_name = "Member"
+    verbose_name_plural = "Members"
+    fields = ('name_ne', 'name_en', 'name_de', 'name', 'image', 'order')
+
+class CommitteeGroupInline(StackedInline):
+    model = CommitteeGroup
+    extra = 1
+    tab = True
+    verbose_name = "Committee Group"
+    verbose_name_plural = "Committee Groups"
+    fieldsets = (
+        (None, {
+            'fields': (
+                ('title_ne', 'title_en', 'title_de'),
+                'order',
+            )
+        }),
+    )
 
 class CommitteeSectionSettingsInline(StackedInline):
     model = CommitteeSectionSettings
@@ -112,9 +125,6 @@ class CommitteeHeroProxyAdmin(ModelAdmin):
     inlines = [CommitteeHeroInline]
     exclude = COMPONENT_EXCLUDE
     list_display = ('__str__', 'updated_at')
-    
-    def get_queryset(self, request):
-        return super().get_queryset(request)
 
 @admin.register(CommitteeExecutiveProxy)
 class CommitteeExecutiveProxyAdmin(ModelAdmin):
@@ -122,9 +132,9 @@ class CommitteeExecutiveProxyAdmin(ModelAdmin):
     exclude = COMPONENT_EXCLUDE
     list_display = ('__str__', 'updated_at')
 
-@admin.register(CommitteeGeneralProxy)
-class CommitteeGeneralProxyAdmin(ModelAdmin):
-    inlines = [CommitteeGeneralInline]
+@admin.register(CommitteeGroupProxy)
+class CommitteeGroupProxyAdmin(ModelAdmin):
+    inlines = [CommitteeGroupInline]
     exclude = COMPONENT_EXCLUDE
     list_display = ('__str__', 'updated_at')
 
@@ -133,3 +143,12 @@ class CommitteeTitleProxyAdmin(ModelAdmin):
     inlines = [CommitteeSectionSettingsInline]
     exclude = COMPONENT_EXCLUDE
     list_display = ('__str__', 'updated_at')
+
+# Separately manage members if needed, or better, include them in Group admin if possible.
+# Django Unfold might not supported nested inlines well out of the box, 
+# so we'll register CommitteeGroup directly too for member management.
+@admin.register(CommitteeGroup)
+class CommitteeGroupAdmin(ModelAdmin):
+    inlines = [CommitteeMemberInline]
+    list_display = ('title_en', 'page', 'order')
+    list_filter = ('page',)

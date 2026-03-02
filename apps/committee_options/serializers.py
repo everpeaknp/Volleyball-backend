@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CommitteePage, CommitteeHero, CommitteeBoard, CommitteeMember, CommitteeSectionSettings
+from .models import CommitteePage, CommitteeHero, CommitteeBoard, CommitteeMember, CommitteeGroup, CommitteeSectionSettings
 
 class CommitteeHeroSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,7 +25,14 @@ class CommitteeBoardSerializer(serializers.ModelSerializer):
 class CommitteeMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommitteeMember
-        fields = ['name', 'image', 'order']
+        fields = ['name_ne', 'name_en', 'name_de', 'name', 'image', 'order']
+
+class CommitteeGroupSerializer(serializers.ModelSerializer):
+    members = CommitteeMemberSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = CommitteeGroup
+        fields = ['title_ne', 'title_en', 'title_de', 'order', 'members']
 
 class CommitteeSectionSettingsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,7 +44,7 @@ class CommitteeSectionSettingsSerializer(serializers.ModelSerializer):
 class CommitteePageFullSerializer(serializers.ModelSerializer):
     hero = CommitteeHeroSerializer(read_only=True)
     board = CommitteeBoardSerializer(read_only=True)
-    members = CommitteeMemberSerializer(many=True, read_only=True)
+    groups = CommitteeGroupSerializer(many=True, read_only=True)
     section_settings = CommitteeSectionSettingsSerializer(read_only=True)
     og_image_url = serializers.SerializerMethodField()
 
@@ -51,7 +58,7 @@ class CommitteePageFullSerializer(serializers.ModelSerializer):
             'og_title_ne', 'og_title_en', 'og_title_de',
             'og_description_ne', 'og_description_en', 'og_description_de',
             'og_image_url', 'canonical_url',
-            'hero', 'board', 'members', 'section_settings'
+            'hero', 'board', 'groups', 'section_settings'
         ]
 
     def get_og_image_url(self, obj):

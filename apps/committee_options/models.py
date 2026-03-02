@@ -66,16 +66,39 @@ class CommitteeBoard(models.Model):
     def __str__(self):
         return f"Executive Board ({self.page})"
 
+class CommitteeGroup(models.Model):
+    page = models.ForeignKey(CommitteePage, on_delete=models.CASCADE, related_name='groups')
+    
+    title_ne = models.CharField(max_length=200, verbose_name="Group Title (NE)")
+    title_en = models.CharField(max_length=200, verbose_name="Group Title (EN)")
+    title_de = models.CharField(max_length=200, verbose_name="Group Title (DE)")
+    
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = "Committee Group"
+        verbose_name_plural = "Committee Groups"
+
+    def __str__(self):
+        return f"{self.title_en} ({self.page})"
+
 class CommitteeMember(models.Model):
+    # page field remains for now to facilitate data migration, but will eventually be removed or redirected via group
     page = models.ForeignKey(CommitteePage, on_delete=models.CASCADE, related_name='members', null=True, blank=True)
-    name = models.CharField(max_length=200)
+    group = models.ForeignKey(CommitteeGroup, on_delete=models.CASCADE, related_name='members', null=True, blank=True)
+    
+    name_ne = models.CharField(max_length=200, verbose_name="Name (NE)", default='')
+    name_en = models.CharField(max_length=200, verbose_name="Name (EN)", default='')
+    name_de = models.CharField(max_length=200, verbose_name="Name (DE)", default='')
+    name = models.CharField(max_length=200, blank=True) # Fallback
     image = models.ImageField(upload_to='images/committee/members/', null=True, blank=True)
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ['order', 'name']
-        verbose_name = "General Member"
-        verbose_name_plural = "General Members"
+        verbose_name = "Committee Member"
+        verbose_name_plural = "Committee Members"
 
     def __str__(self):
         return self.name
@@ -110,11 +133,11 @@ class CommitteeExecutiveProxy(CommitteePage):
         verbose_name = "03. Executive Board"
         verbose_name_plural = "03. Executive Board"
 
-class CommitteeGeneralProxy(CommitteePage):
+class CommitteeGroupProxy(CommitteePage):
     class Meta:
         proxy = True
-        verbose_name = "04. General Members"
-        verbose_name_plural = "04. General Members"
+        verbose_name = "04. Committee Groups"
+        verbose_name_plural = "04. Committee Groups"
 
 class CommitteeTitleProxy(CommitteePage):
     class Meta:
