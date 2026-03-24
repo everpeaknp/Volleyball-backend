@@ -27,44 +27,28 @@ class CommitteeHero(models.Model):
     def __str__(self):
         return f"Hero Section ({self.page})"
 
-class CommitteeBoard(models.Model):
-    page = models.OneToOneField(CommitteePage, on_delete=models.CASCADE, related_name='board', null=True, blank=True)
-    
-    # President
-    pres_name = models.CharField(max_length=200, verbose_name="President Name")
-    pres_role_ne = models.CharField(max_length=200, verbose_name="President Role (NE)")
-    pres_role_en = models.CharField(max_length=200, verbose_name="President Role (EN)")
-    pres_role_de = models.CharField(max_length=200, verbose_name="President Role (DE)")
-    pres_desc_ne = models.TextField(verbose_name="President Description (NE)", blank=True)
-    pres_desc_en = models.TextField(verbose_name="President Description (EN)", blank=True)
-    pres_desc_de = models.TextField(verbose_name="President Description (DE)", blank=True)
-    pres_image = models.ImageField(upload_to='images/committee/board/', null=True, blank=True, verbose_name="President Image")
-    pres_email = models.EmailField(blank=True, null=True, verbose_name="President Email")
 
-    # Secretary
-    sec_name = models.CharField(max_length=200, verbose_name="Secretary Name")
-    sec_role_ne = models.CharField(max_length=200, verbose_name="Secretary Role (NE)")
-    sec_role_en = models.CharField(max_length=200, verbose_name="Secretary Role (EN)")
-    sec_role_de = models.CharField(max_length=200, verbose_name="Secretary Role (DE)")
-    sec_desc_ne = models.TextField(verbose_name="Secretary Description (NE)", blank=True)
-    sec_desc_en = models.TextField(verbose_name="Secretary Description (EN)", blank=True)
-    sec_desc_de = models.TextField(verbose_name="Secretary Description (DE)", blank=True)
-    sec_image = models.ImageField(upload_to='images/committee/board/', null=True, blank=True, verbose_name="Secretary Image")
-    sec_email = models.EmailField(blank=True, null=True, verbose_name="Secretary Email")
 
-    # Treasurer
-    tres_name = models.CharField(max_length=200, verbose_name="Treasurer Name")
-    tres_role_ne = models.CharField(max_length=200, verbose_name="Treasurer Role (NE)")
-    tres_role_en = models.CharField(max_length=200, verbose_name="Treasurer Role (EN)")
-    tres_role_de = models.CharField(max_length=200, verbose_name="Treasurer Role (DE)")
-    tres_desc_ne = models.TextField(verbose_name="Treasurer Description (NE)", blank=True)
-    tres_desc_en = models.TextField(verbose_name="Treasurer Description (EN)", blank=True)
-    tres_desc_de = models.TextField(verbose_name="Treasurer Description (DE)", blank=True)
-    tres_image = models.ImageField(upload_to='images/committee/board/', null=True, blank=True, verbose_name="Treasurer Image")
-    tres_email = models.EmailField(blank=True, null=True, verbose_name="Treasurer Email")
+class ExecutiveMember(models.Model):
+    page = models.ForeignKey(CommitteePage, on_delete=models.CASCADE, related_name='executives')
+    name = models.CharField(max_length=200, verbose_name="Name")
+    role_ne = models.CharField(max_length=200, verbose_name="Role (NE)")
+    role_en = models.CharField(max_length=200, verbose_name="Role (EN)")
+    role_de = models.CharField(max_length=200, verbose_name="Role (DE)")
+    desc_ne = models.TextField(verbose_name="Description (NE)", blank=True)
+    desc_en = models.TextField(verbose_name="Description (EN)", blank=True)
+    desc_de = models.TextField(verbose_name="Description (DE)", blank=True)
+    image = models.ImageField(upload_to='images/committee/executives/', null=True, blank=True)
+    email = models.EmailField(blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = "Executive Member"
+        verbose_name_plural = "Executive Members"
 
     def __str__(self):
-        return f"Executive Board ({self.page})"
+        return self.name
 
 class CommitteeGroup(models.Model):
     page = models.ForeignKey(CommitteePage, on_delete=models.CASCADE, related_name='groups')

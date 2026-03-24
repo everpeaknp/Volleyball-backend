@@ -73,6 +73,8 @@ class Player(models.Model):
     position_ne = models.CharField(max_length=100, verbose_name="Position (NE)")
     position_en = models.CharField(max_length=100, verbose_name="Position (EN)")
     position_de = models.CharField(max_length=100, verbose_name="Position (DE)")
+    is_captain = models.BooleanField(default=False, verbose_name="Is Captain")
+    is_vice_captain = models.BooleanField(default=False, verbose_name="Is Vice Captain")
     image = models.ImageField(upload_to='images/team/players/', null=True, blank=True)
     image_url = models.URLField(blank=True, null=True, verbose_name="Image URL (CDN)")
     order = models.PositiveIntegerField(default=0)

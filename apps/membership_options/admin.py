@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import (
     MembershipPageProxy, MembershipHeroProxy, MembershipBenefitsProxy, MembershipFormProxy,
-    MembershipHero, MembershipBenefit, MembershipFormSettings, MembershipApplication
+    MembershipHero, MembershipBenefit, MembershipFormSettings, MembershipApplication, MembershipRenewalProxy
 )
 
 # --- Inlines ---
@@ -60,6 +60,7 @@ class MembershipFormSettingsInline(StackedInline):
                 ('label_experience_ne', 'label_experience_en', 'label_experience_de'),
                 ('label_position_ne', 'label_position_en', 'label_position_de'),
                 ('label_category_ne', 'label_category_en', 'label_category_de'),
+                ('label_duration_ne', 'label_duration_en', 'label_duration_de'),
                 ('label_voucher_ne', 'label_voucher_en', 'label_voucher_de'),
                 ('label_reason_ne', 'label_reason_en', 'label_reason_de'),
                 ('label_submit_ne', 'label_submit_en', 'label_submit_de'),
@@ -73,6 +74,7 @@ class MembershipFormSettingsInline(StackedInline):
                 ('options_experience_ne', 'options_experience_en', 'options_experience_de'),
                 ('options_position_ne', 'options_position_en', 'options_position_de'),
                 ('options_category_ne', 'options_category_en', 'options_category_de'),
+                ('options_duration_ne', 'options_duration_en', 'options_duration_de'),
             )
         }),
     )
@@ -132,16 +134,19 @@ class MembershipFormProxyAdmin(ModelAdmin):
 
 @admin.register(MembershipApplication)
 class MembershipApplicationAdmin(ModelAdmin):
-    list_display = ('full_name', 'email', 'category', 'is_approved', 'created_at')
-    list_filter = ('category', 'is_approved', 'gender', 'experience', 'position', 'created_at')
+    list_display = ('full_name', 'email', 'category', 'status', 'expires_at', 'created_at')
+    list_filter = ('category', 'status', 'gender', 'experience', 'position', 'created_at')
     search_fields = ('full_name', 'email', 'phone')
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'approved_at', 'expires_at', 'last_warning_sent_at')
     date_hierarchy = 'created_at'
     actions = ['approve_applications']
     
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(is_renewal=False)
+    
     fieldsets = (
         ('Status', {
-            'fields': ('is_approved',)
+            'fields': ('status', 'duration_years', 'is_renewal', 'parent_membership')
         }),
         ('Personal Information', {
             'fields': ('full_name', 'email', 'phone', 'address', 'date_of_birth', 'gender')
@@ -154,7 +159,7 @@ class MembershipApplicationAdmin(ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Timestamps', {
-            'fields': ('created_at', 'updated_at'),
+            'fields': ('created_at', 'updated_at', 'approved_at', 'expires_at', 'last_warning_sent_at'),
             'classes': ('collapse',)
         }),
     )
@@ -162,9 +167,37 @@ class MembershipApplicationAdmin(ModelAdmin):
     @admin.action(description="Approve selected membership applications")
     def approve_applications(self, request, queryset):
         count = 0
-        for application in queryset.filter(is_approved=False):
-            application.is_approved = True
+        for application in queryset.filter(status='pending'):
+            application.status = 'active'
             application.save()
             count += 1
         
         self.message_user(request, f"Successfully approved {count} applications and sent notification emails.")
+
+
+@admin.register(MembershipRenewalProxy)
+class MembershipRenewalProxyAdmin(ModelAdmin):
+    list_display = ('full_name', 'email', 'duration_years', 'status', 'expires_at', 'parent_membership', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('full_name', 'email')
+    readonly_fields = ('created_at', 'updated_at', 'approved_at', 'expires_at', 'last_warning_sent_at')
+    date_hierarchy = 'created_at'
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(is_renewal=True)
+    
+    fieldsets = (
+        ('Renewal Status', {
+            'fields': ('status', 'parent_membership', 'duration_years', 'is_renewal')
+        }),
+        ('User Context', {
+            'fields': ('full_name', 'email', 'category')
+        }),
+        ('Submitted Evidence', {
+            'fields': ('bank_voucher',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at', 'approved_at', 'expires_at', 'last_warning_sent_at'),
+            'classes': ('collapse',)
+        }),
+    )

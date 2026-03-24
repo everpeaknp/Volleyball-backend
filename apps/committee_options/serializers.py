@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CommitteePage, CommitteeHero, CommitteeBoard, CommitteeMember, CommitteeGroup, CommitteeSectionSettings
+from .models import CommitteePage, CommitteeHero, ExecutiveMember, CommitteeMember, CommitteeGroup, CommitteeSectionSettings
 
 class CommitteeHeroSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,16 +10,12 @@ class CommitteeHeroSerializer(serializers.ModelSerializer):
             'background_image', 'background_color'
         ]
 
-class CommitteeBoardSerializer(serializers.ModelSerializer):
+class ExecutiveMemberSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CommitteeBoard
+        model = ExecutiveMember
         fields = [
-            'pres_name', 'pres_role_ne', 'pres_role_en', 'pres_role_de',
-            'pres_desc_ne', 'pres_desc_en', 'pres_desc_de', 'pres_image', 'pres_email',
-            'sec_name', 'sec_role_ne', 'sec_role_en', 'sec_role_de',
-            'sec_desc_ne', 'sec_desc_en', 'sec_desc_de', 'sec_image', 'sec_email',
-            'tres_name', 'tres_role_ne', 'tres_role_en', 'tres_role_de',
-            'tres_desc_ne', 'tres_desc_en', 'tres_desc_de', 'tres_image', 'tres_email'
+            'name', 'role_ne', 'role_en', 'role_de',
+            'desc_ne', 'desc_en', 'desc_de', 'image', 'email', 'order'
         ]
 
 class CommitteeMemberSerializer(serializers.ModelSerializer):
@@ -43,7 +39,7 @@ class CommitteeSectionSettingsSerializer(serializers.ModelSerializer):
 
 class CommitteePageFullSerializer(serializers.ModelSerializer):
     hero = CommitteeHeroSerializer(read_only=True)
-    board = CommitteeBoardSerializer(read_only=True)
+    executives = ExecutiveMemberSerializer(many=True, read_only=True)
     groups = CommitteeGroupSerializer(many=True, read_only=True)
     section_settings = CommitteeSectionSettingsSerializer(read_only=True)
     og_image_url = serializers.SerializerMethodField()
@@ -58,7 +54,7 @@ class CommitteePageFullSerializer(serializers.ModelSerializer):
             'og_title_ne', 'og_title_en', 'og_title_de',
             'og_description_ne', 'og_description_en', 'og_description_de',
             'og_image_url', 'canonical_url',
-            'hero', 'board', 'groups', 'section_settings'
+            'hero', 'executives', 'groups', 'section_settings'
         ]
 
     def get_og_image_url(self, obj):

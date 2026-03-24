@@ -3,7 +3,7 @@ from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from .models import (
     CommitteePageProxy, CommitteeHeroProxy, CommitteeExecutiveProxy,
     CommitteeGroupProxy, CommitteeTitleProxy, 
-    CommitteeHero, CommitteeBoard, CommitteeMember, CommitteeGroup, CommitteeSectionSettings
+    CommitteeHero, ExecutiveMember, CommitteeMember, CommitteeGroup, CommitteeSectionSettings
 )
 
 # --- Inlines ---
@@ -21,32 +21,18 @@ class CommitteeHeroInline(StackedInline):
         }),
     )
 
-class CommitteeBoardInline(StackedInline):
-    model = CommitteeBoard
-    can_delete = False
+class ExecutiveMemberInline(StackedInline):
+    model = ExecutiveMember
+    extra = 1
+    tab = True
     fieldsets = (
-        ('President', {
+        (None, {
             'fields': (
-                'pres_name',
-                ('pres_role_ne', 'pres_role_en', 'pres_role_de'),
-                ('pres_desc_ne', 'pres_desc_en', 'pres_desc_de'),
-                ('pres_image', 'pres_email'),
-            )
-        }),
-        ('Secretary', {
-            'fields': (
-                'sec_name',
-                ('sec_role_ne', 'sec_role_en', 'sec_role_de'),
-                ('sec_desc_ne', 'sec_desc_en', 'sec_desc_de'),
-                ('sec_image', 'sec_email'),
-            )
-        }),
-        ('Treasurer', {
-            'fields': (
-                'tres_name',
-                ('tres_role_ne', 'tres_role_en', 'tres_role_de'),
-                ('tres_desc_ne', 'tres_desc_en', 'tres_desc_de'),
-                ('tres_image', 'tres_email'),
+                'name',
+                ('role_ne', 'role_en', 'role_de'),
+                ('desc_ne', 'desc_en', 'desc_de'),
+                ('image', 'email'),
+                'order'
             )
         }),
     )
@@ -128,7 +114,7 @@ class CommitteeHeroProxyAdmin(ModelAdmin):
 
 @admin.register(CommitteeExecutiveProxy)
 class CommitteeExecutiveProxyAdmin(ModelAdmin):
-    inlines = [CommitteeBoardInline]
+    inlines = [ExecutiveMemberInline]
     exclude = COMPONENT_EXCLUDE
     list_display = ('__str__', 'updated_at')
 

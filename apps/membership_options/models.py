@@ -105,6 +105,10 @@ class MembershipFormSettings(models.Model):
     label_voucher_en = models.CharField(max_length=100, default="Bank Voucher Photo")
     label_voucher_de = models.CharField(max_length=100, default="Bankbeleg Foto")
 
+    label_duration_ne = models.CharField(max_length=100, default="सदस्यता अवधि (वर्ष)")
+    label_duration_en = models.CharField(max_length=100, default="Membership Duration (Years)")
+    label_duration_de = models.CharField(max_length=100, default="Dauer der Mitgliedschaft (Jahre)")
+
     # Options (Stored as comma-separated strings for simplicity in Admin, or JSON if needed)
     options_gender_ne = models.CharField(max_length=500, default="पुरुष, महिला, अन्य")
     options_gender_en = models.CharField(max_length=500, default="Male, Female, Other")
@@ -121,6 +125,10 @@ class MembershipFormSettings(models.Model):
     options_category_ne = models.CharField(max_length=500, default="सदस्य, खेलाडी")
     options_category_en = models.CharField(max_length=500, default="Committee, Player")
     options_category_de = models.CharField(max_length=500, default="Ausschuss, Spieler")
+
+    options_duration_ne = models.CharField(max_length=500, default="१, २, ५")
+    options_duration_en = models.CharField(max_length=500, default="1, 2, 5")
+    options_duration_de = models.CharField(max_length=500, default="1, 2, 5")
 
     class Meta:
         verbose_name = "Form Settings & Labels"
@@ -170,7 +178,20 @@ class MembershipApplication(models.Model):
     
     reason = models.TextField()
     
-    is_approved = models.BooleanField(default=False)
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('active', 'Active'),
+        ('expired', 'Expired'),
+        ('rejected', 'Rejected'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    duration_years = models.PositiveIntegerField(default=1)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    last_warning_sent_at = models.DateTimeField(null=True, blank=True)
+    
+    is_renewal = models.BooleanField(default=False)
+    parent_membership = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='renewals')
     
     # Auto fields
     created_at = models.DateTimeField(auto_now_add=True)
@@ -202,15 +223,55 @@ class MembershipApplication(models.Model):
         except Exception as e:
             print(f"Failed to send approval email to {self.email}: {e}")
 
+    def send_admin_notification(self):
+        from django.core.mail import send_mail
+        from django.conf import settings
+        admin_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@nepalvolleyballhh.de')
+        try:
+            subject = f"New {'Renewal' if self.is_renewal else 'Membership'} Application: {self.full_name}"
+            message = (
+                f"A new {'renewal' if self.is_renewal else 'membership'} application has been submitted by {self.full_name}.\n"
+                f"Email: {self.email}\n"
+                f"Category: {self.category}\n"
+                f"Duration Requested: {self.duration_years} year(s)\n\n"
+                f"Please log into the Admin panel to review the details and bank voucher, and approve the membership."
+            )
+            send_mail(subject, message, admin_email, [admin_email], fail_silently=True)
+        except Exception as e:
+            print(f"Failed to send admin notification: {e}")
+
     def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        
         if self.pk:
             try:
                 old_instance = MembershipApplication.objects.get(pk=self.pk)
-                if not old_instance.is_approved and self.is_approved:
+                if old_instance.status != 'active' and self.status == 'active':
+                    from django.utils import timezone
+                    import datetime
+                    
+                    self.approved_at = timezone.now()
+                    
+                    # Add duration_years to current time protecting against leap year errors
+                    try:
+                        self.expires_at = self.approved_at.replace(year=self.approved_at.year + self.duration_years)
+                    except ValueError:
+                        self.expires_at = self.approved_at.replace(year=self.approved_at.year + self.duration_years, day=28)
+                    
+                    # Auto link logic if this is a renewal
+                    if self.is_renewal and self.parent_membership:
+                        self.parent_membership.expires_at = self.expires_at
+                        self.parent_membership.status = 'active'
+                        self.parent_membership.save(update_fields=['expires_at', 'status'])
+                        
                     self.send_approval_email()
             except MembershipApplication.DoesNotExist:
                 pass
+                
         super().save(*args, **kwargs)
+        
+        if is_new:
+            self.send_admin_notification()
 
 # --- Proxy Models for Admin ---
 
@@ -241,3 +302,10 @@ class MembershipFormProxy(MembershipPage):
         app_label = 'membership_options'
         verbose_name = '04: Form & Labels'
         verbose_name_plural = '04: Form & Labels'
+
+class MembershipRenewalProxy(MembershipApplication):
+    class Meta:
+        proxy = True
+        app_label = 'membership_options'
+        verbose_name = 'Membership Renewal Receipt'
+        verbose_name_plural = 'Membership Renewal Receipts'

@@ -48,4 +48,4 @@ class MembershipApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = MembershipApplication
         fields = '__all__'
-        read_only_fields = ('id', 'is_approved', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'status', 'approved_at', 'expires_at', 'last_warning_sent_at', 'created_at', 'updated_at')

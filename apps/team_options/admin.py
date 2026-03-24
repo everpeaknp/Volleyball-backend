@@ -1,7 +1,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
-from django.contrib import admin
-from unfold.admin import ModelAdmin, TabularInline, StackedInline, TabularInline, StackedInline
+from django.forms.models import BaseInlineFormSet
+from django.core.exceptions import ValidationError
 from .models import (
     TeamPageProxy, TeamHeroProxy, TeamCoachesProxy, TeamPlayersProxy, TeamPhotoCTAProxy,
     TeamHero, Coach, Player, TeamPhotoSection, TeamCTA, TeamCoachesSettings, TeamPlayersSettings
@@ -59,8 +59,38 @@ class CoachInline(StackedInline):
         }),
     )
 
+class PlayerInlineFormSet(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        if any(self.errors):
+            return
+            
+        captain_count = 0
+        vice_captain_count = 0
+        
+        for form in self.forms:
+            if not form.is_valid():
+                continue
+            if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
+                is_cap = form.cleaned_data.get('is_captain')
+                is_vice = form.cleaned_data.get('is_vice_captain')
+                
+                if is_cap and is_vice:
+                    raise ValidationError("A single player cannot be both captain and vice captain.")
+                    
+                if is_cap:
+                    captain_count += 1
+                if is_vice:
+                    vice_captain_count += 1
+                    
+        if captain_count > 1:
+            raise ValidationError("There can be only one captain per team.")
+        if vice_captain_count > 1:
+            raise ValidationError("There can be only one vice captain per team.")
+
 class PlayerInline(StackedInline):
     model = Player
+    formset = PlayerInlineFormSet
     extra = 1
     tab = True
     fieldsets = (
@@ -69,6 +99,7 @@ class PlayerInline(StackedInline):
                 ('name_ne', 'name_en', 'name_de'),
                 'number',
                 ('position_ne', 'position_en', 'position_de'),
+                ('is_captain', 'is_vice_captain'),
                 ('image', 'order'),
             )
         }),

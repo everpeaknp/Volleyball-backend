@@ -14,7 +14,7 @@ from apps.about_options.models import (
     AboutPage, AboutHero, AboutIntro, AboutStat, AboutCore, AboutStrategic, AboutObjective
 )
 from apps.committee_options.models import (
-    CommitteePage, CommitteeHero, CommitteeBoard, CommitteeMember, CommitteeSectionSettings
+    CommitteePage, CommitteeHero, ExecutiveMember, CommitteeMember, CommitteeSectionSettings
 )
 from apps.team_options.models import (
     TeamPage, TeamHero, TeamCoachesSettings, TeamPlayersSettings,
@@ -446,40 +446,46 @@ class Command(BaseCommand):
             }
         )
 
-        CommitteeBoard.objects.update_or_create(
-            page=committee_page,
-            defaults={
-                # President
-                'pres_name': 'प्रेमकुमार शेरचन',
-                'pres_role_ne': 'अध्यक्ष',
-                'pres_role_en': 'President',
-                'pres_role_de': 'Präsident',
-                'pres_desc_ne': 'क्लबको समग्र नेतृत्व, नीति निर्माण तथा बाह्य प्रतिनिधित्व',
-                'pres_desc_en': 'Overall leadership, policy making and external representation',
-                'pres_desc_de': 'Gesamtleitung und Vertretung des Vereins',
-                'pres_email': 'president@nepalvolleyball.de',
-                
-                # Secretary
-                'sec_name': 'शिव प्रसाद अधिकारी',
-                'sec_role_ne': 'सचिव',
-                'sec_role_en': 'Secretary',
-                'sec_role_de': 'Sekretär',
-                'sec_desc_ne': 'प्रशासनिक कार्य, बैठक व्यवस्थापन तथा अभिलेख राख्ने',
-                'sec_desc_en': 'Administrative tasks, meeting management and record keeping',
-                'sec_desc_de': 'Verwaltung, Dokumentation und Organisation der Sitzungen',
-                'sec_email': 'secretary@nepalvolleyball.de',
-                
-                # Treasurer
-                'tres_name': 'तेज कुमार राई',
-                'tres_role_ne': 'कोषाध्यक्ष',
-                'tres_role_en': 'Treasurer',
-                'tres_role_de': 'Schatzmeister',
-                'tres_desc_ne': 'आर्थिक व्यवस्थापन, बजेट तथा लेखा–जोखा',
-                'tres_desc_en': 'Financial management, budgeting and accounting',
-                'tres_desc_de': 'Finanzverwaltung und Buchhaltung',
-                'tres_email': 'treasurer@nepalvolleyball.de',
+        ExecutiveMember.objects.filter(page=committee_page).delete()
+        
+        executives_data = [
+            {
+                'name': 'प्रेमकुमार शेरचन',
+                'role_ne': 'अध्यक्ष',
+                'role_en': 'President',
+                'role_de': 'Präsident',
+                'desc_ne': 'क्लबको समग्र नेतृत्व, नीति निर्माण तथा बाह्य प्रतिनिधित्व',
+                'desc_en': 'Overall leadership, policy making and external representation',
+                'desc_de': 'Gesamtleitung und Vertretung des Vereins',
+                'email': 'president@nepalvolleyball.de',
+                'order': 1
+            },
+            {
+                'name': 'शिव प्रसाद अधिकारी',
+                'role_ne': 'सचिव',
+                'role_en': 'Secretary',
+                'role_de': 'Sekretär',
+                'desc_ne': 'प्रशासनिक कार्य, बैठक व्यवस्थापन तथा अभिलेख राख्ने',
+                'desc_en': 'Administrative tasks, meeting management and record keeping',
+                'desc_de': 'Verwaltung, Dokumentation und Organisation der Sitzungen',
+                'email': 'secretary@nepalvolleyball.de',
+                'order': 2
+            },
+            {
+                'name': 'तेज कुमार राई',
+                'role_ne': 'कोषाध्यक्ष',
+                'role_en': 'Treasurer',
+                'role_de': 'Schatzmeister',
+                'desc_ne': 'आर्थिक व्यवस्थापन, बजेट तथा लेखा–जोखा',
+                'desc_en': 'Financial management, budgeting and accounting',
+                'desc_de': 'Finanzverwaltung und Buchhaltung',
+                'email': 'treasurer@nepalvolleyball.de',
+                'order': 3
             }
-        )
+        ]
+        
+        for exec_data in executives_data:
+            ExecutiveMember.objects.create(page=committee_page, **exec_data)
 
         CommitteeSectionSettings.objects.update_or_create(
             page=committee_page,

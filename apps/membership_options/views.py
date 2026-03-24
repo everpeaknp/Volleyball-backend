@@ -80,3 +80,51 @@ def create_membership_application(request):
         'errors': serializer.errors,
         'message': 'Please check your form data and try again.'
     }, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_membership_renewal(request):
+    """
+    Submit a renewal for an existing membership
+    """
+    email = request.data.get('email')
+    duration_years = request.data.get('duration_years', 1)
+    bank_voucher = request.FILES.get('bank_voucher')
+
+    if not email or not bank_voucher:
+        return Response({
+            'success': False,
+            'message': 'Email and Bank Voucher are required for renewal.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # Find their most recent membership
+    parent = MembershipApplication.objects.filter(email=email).order_by('-created_at').first()
+    if not parent:
+        return Response({
+            'success': False,
+            'message': 'No existing membership found for this email.'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    # Create a renewal application pending Admin approval
+    renewal = MembershipApplication.objects.create(
+        full_name=parent.full_name,
+        email=parent.email,
+        phone=parent.phone,
+        address=parent.address,
+        date_of_birth=parent.date_of_birth,
+        gender=parent.gender,
+        category=parent.category,
+        experience=parent.experience,
+        position=parent.position,
+        reason="Renewal Request",
+        duration_years=int(duration_years),
+        bank_voucher=bank_voucher,
+        is_renewal=True,
+        parent_membership=parent
+    )
+
+    return Response({
+        'success': True,
+        'message': 'Renewal requested successfully! We will review your voucher shortly.',
+        'application_id': renewal.id
+    }, status=status.HTTP_201_CREATED)
