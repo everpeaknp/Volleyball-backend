@@ -43,7 +43,11 @@ class CommitteeMemberInline(TabularInline):
     tab = True
     verbose_name = "Member"
     verbose_name_plural = "Members"
-    fields = ('name_ne', 'name_en', 'name_de', 'name', 'image', 'order')
+    fields = (
+        'name_ne', 'name_en', 'name_de', 'name', 
+        'role_ne', 'role_en', 'role_de',
+        'image', 'order'
+    )
 
 class CommitteeGroupInline(StackedInline):
     model = CommitteeGroup

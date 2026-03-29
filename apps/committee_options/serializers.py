@@ -21,7 +21,11 @@ class ExecutiveMemberSerializer(serializers.ModelSerializer):
 class CommitteeMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommitteeMember
-        fields = ['name_ne', 'name_en', 'name_de', 'name', 'image', 'order']
+        fields = [
+            'name_ne', 'name_en', 'name_de', 'name', 
+            'role_ne', 'role_en', 'role_de',
+            'image', 'order'
+        ]
 
 class CommitteeGroupSerializer(serializers.ModelSerializer):
     members = CommitteeMemberSerializer(many=True, read_only=True)

@@ -76,6 +76,10 @@ class CommitteeMember(models.Model):
     name_en = models.CharField(max_length=200, verbose_name="Name (EN)", default='')
     name_de = models.CharField(max_length=200, verbose_name="Name (DE)", default='')
     name = models.CharField(max_length=200, blank=True) # Fallback
+    
+    role_ne = models.CharField(max_length=200, verbose_name="Role (NE)", blank=True, null=True)
+    role_en = models.CharField(max_length=200, verbose_name="Role (EN)", blank=True, null=True)
+    role_de = models.CharField(max_length=200, verbose_name="Role (DE)", blank=True, null=True)
     image = models.ImageField(upload_to='images/committee/members/', null=True, blank=True)
     order = models.PositiveIntegerField(default=0)
 
