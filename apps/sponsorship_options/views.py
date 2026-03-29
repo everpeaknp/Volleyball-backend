@@ -20,6 +20,7 @@ class SponsorshipPageView(APIView):
 
 from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @parser_classes([MultiPartParser, FormParser])

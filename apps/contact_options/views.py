@@ -10,6 +10,7 @@ from .serializers import ContactSubmissionSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_contact_submission(request):
